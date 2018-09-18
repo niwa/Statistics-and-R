@@ -1,0 +1,30 @@
+---
+title: ''
+author: ""
+date: "September 2018"
+output: 
+  html_document:
+      toc: true
+      toc_depth: 3
+      toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Install R and RStudio
+
+From **NIWA Apps** install ![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/R_logo.svg/2000px-R_logo.svg.png){width=2%} (**R**) and  ![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Antu_rstudio.svg/2000px-Antu_rstudio.svg.png){width=2%} (**RStudio**), I found both under **Programming**.
+
+
+
+**R** is a computer language and **RStudio** is a widely used Graphical User Interface (GUI) that calls it in the background.
+
+To check everything is working open up **RStudio** ![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Antu_rstudio.svg/2000px-Antu_rstudio.svg.png){width=2%}, if you use Windows use the Search Windows box to locate. 
+
+Once opened you should see something like this ![](rstudio.png)
+
+The section with the curser is called the **Console**. To test all is working, where the curser is type `3 + 4` and press enter. If all has gone well you should see something like this ![](rstudio2.png)
+
+You can now close **RStudio** down as you are already for the first session.
