@@ -1,7 +1,7 @@
 ---
 title: ''
 author: ""
-date: "September 2018"
+date: "2018"
 output: 
   html_document:
       toc: true
@@ -28,3 +28,78 @@ Once opened you should see something like this ![](rstudio.png)
 The section with the curser is called the **Console**. To test all is working, where the curser is type `3 + 4` and press enter. If all has gone well you should see something like this ![](rstudio2.png)
 
 You can now close **RStudio** down as you are already for the first session.
+
+## Basics
+
+### Some terminology
+
+- **Console**: the text-based interface between you and the computer. This is where you tell the computer what to do.
+
+- **Script**: the code you write telling the computer what to do.
+
+- **Run**: the act of actually implementiong your code telling the computer what to do.
+
+- **Syntax**: how the language is written and what characters mean.
+
+- **Function**: sort of like a rule that dictates what you want to calculate.
+
+- **Argument**: an object you would give a function to calculate something.
+
+- **Package**: a collection/suite of functions/commands. 
+
+### Don't have a dirty workspace
+
+In **RStudio**. **Tools >> Global Options** 
+
+- Uncheck *Restore .RData into workspace at startup*
+- Uncheck *Restore most recently opened project at startup*
+- Uncheck *Always save history (even when not saving .RData)*
+- Set *Save workspace to .RData on exit:* to Never
+
+### Basic operations
+
+```{r basic, eval = TRUE}
+## Start a line with hash and you can write your own comments
+## This helps future you understand what present you was doing.
+## To add two numbers
+3 + 4 ## When run the number 7 should appear in your console
+## Multiply two numbers
+3 * 4
+## "Create" and object x and give it the value 3
+x <- 3
+## So what is x? Type x and find out
+x
+## What is x - 1?
+x - 1
+## To create a vector of numbers 1--5
+y <- c(1,2,3,4,5) 
+## or
+z <- 1:5
+## Print them to the console
+y
+z
+## times y by x
+y*x
+```
+
+### Errors
+
+Honestly they are in English!
+
+Try typing your name into the console
+
+```{r error,error=TRUE}
+Charlotte ## An Error should be printed to your console
+```
+
+Why is this? It's because `Charlotte` doesn't exist in **R** because I haven't created it.
+
+Armed with a little common sense most Errors are easy to decipher. If not ask Google...
+
+## Reading data into R
+
+### Setting your "working directory"
+
+- In **RStudio** follow **Session >> Set Working Directory >> Choose Directory...** 
+
+- Or in your console run `setwd("path/to/your/directory")`
