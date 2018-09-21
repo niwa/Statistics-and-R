@@ -27,7 +27,7 @@ Once opened you should see something like this ![](rstudio.png)
 
 The section with the curser is called the **Console**. To test all is working, where the curser is type `3 + 4` and press enter. If all has gone well you should see something like this ![](rstudio2.png)
 
-You can now close **RStudio** down as you are already for the first session.
+##### ******You can now close **RStudio** down as you are ready for the first session.******
 
 ## Basics
 
@@ -37,7 +37,7 @@ You can now close **RStudio** down as you are already for the first session.
 
 - **Script**: the code you write telling the computer what to do.
 
-- **Run**: the act of actually implementiong your code telling the computer what to do.
+- **Run**: the act of actually implementing your code telling the computer what to do.
 
 - **Syntax**: how the language is written and what characters mean.
 
@@ -80,6 +80,8 @@ y
 z
 ## times y by x
 y*x
+## the mean of y
+mean(y)
 ```
 
 ### Errors
@@ -96,10 +98,74 @@ Why is this? It's because `Charlotte` doesn't exist in **R** because I haven't c
 
 Armed with a little common sense most Errors are easy to decipher. If not ask Google...
 
-## Reading data into R
+## Introduction to R
 
 ### Setting your "working directory"
 
 - In **RStudio** follow **Session >> Set Working Directory >> Choose Directory...** 
 
 - Or in your console run `setwd("path/to/your/directory")`
+
+### Open an `.r` script
+
+- **File >> New File >> R Script**
+
+This is where you'll type your commands and the "Run" them in the console.
+
+
+### HELP
+
+There are a few ways to ask R for help without resorting to using [Google](https://www.google.com/). Try running the following code.
+```{r help, eval = FALSE}
+?mean ## will open up a screen with a description of the function mean()
+args(mean) ## prints the arguments the function takes to the console
+```
+
+### Reading in data
+
+Most data files can be read into **R** using a single line of code. If you haven't set your working directory (see above) to the folder where your data file is then you **must** put in the full path to the file. 
+
+Functions to read in the two main types of data file extensions are listed below. In both instances the data are read in and saved as the **R** object `data`.
+
+```{r read in, eval = FALSE}
+## read in a .csv
+data <- read.csv("path/to/your/file.csv")
+## read in a .txt file
+data <- read.table("path/to/your/file.txt")
+```
+
+In addition, **RStudio** offers a point and click version: **Import Dataset** (top right panel).
+
+Let's read in a `.csv` file. First download [this file](https://git.niwa.local/jonestoddcm/Statistics-and-R/blob/master/data/ecoli.csv) into your working directory, The file includes some Ecoli data.
+
+```{r read in csv,echo = 2:3}
+setwd("../data")
+## read the file into R
+data <- read.csv("ecoli.csv") ## or the replace the .csv file name with the file name you've chosen
+```
+
+### Inspecting and accessing data
+
+Let's look at the first few rows of the data.
+
+```{r head}
+head(data)
+```
+
+To access a specific element of the data we use the `$` character. For example, to access the column of sites you would use `data$site`. Alternatively you can use the `[]` brackets to access elements of the data. For example, to access the fourth row would would type `data[4,]`. You could also access the *site* column using `data[,5]` as this is the 5th column. Note to access a certain row the number goes **before** the comma and the column number goes **after**. A blank either side means access **all** that row or column.
+
+Run the following commands and see if you can work out what they're doing. Use the ## to write your own comments in your script.
+
+```{r, eval = FALSE}
+str(data)
+table(data$site)
+summary(data$value)
+median(data$value)
+boxplot(data$value~data$site)
+```
+
+### Week One "Homework"
+
+The following activities rely on you having read in the ecoli data you downloaded in class as the object **data**.
+
+- calculate the mean of the value column and save it as the object **mean.val** [HINT: to save the median of the value column as **median.val** you might use `median.val <- median(data$value)` ]
