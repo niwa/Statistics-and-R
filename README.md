@@ -16,3 +16,8 @@
 * [All classroom materials](https://jonestoddcm.apps.niwa.local/Statistics-and-R)
 * In class [Chatzy link](http://www.chatzy.com/63287706207914) for online chat and questions (will be monitored by a stats gremlin)
 * In class [Socrative quiz link](https://b.socrative.com/login/student/) to enter the **STATSANDR** room
+
+### Other online **R** tutorials
+
+* [What They Forgot to Teach You About R](https://whattheyforgot.org/)
+* [Programming with R by the Software Carpentry](https://swcarpentry.github.io/r-novice-inflammation/)

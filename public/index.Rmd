@@ -56,6 +56,9 @@ In **RStudio**. **Tools >> Global Options**
 - Uncheck *Always save history (even when not saving .RData)*
 - Set *Save workspace to .RData on exit:* to Never
 
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Emblem-important-black.svg/1024px-Emblem-important-black.svg.png){width=10%}](https://whattheyforgot.org/save-source.html#always-start-r-with-a-blank-slate)
+**Always start R wih a blank slate**
+
 ### Basic operations
 
 ```{r basic, eval = TRUE}
@@ -152,7 +155,7 @@ Let's look at the first few rows of the data.
 head(data)
 ```
 
-To access a specific element of the data we use the `$` character. For example, to access the column of sites you would use `data$site`. Alternatively you can use the `[]` brackets to access elements of the data. For example, to access the fourth row would would type `data[4,]`. You could also access the *site* column using `data[,5]` as this is the 5th column. Note to access a certain row the number goes **before** the comma and the column number goes **after**. A blank either side means access **all** that row or column.
+To access a specific element of the data we use the `$` character. For example, to access the column of sites you would use `data$site`. Alternatively you can use the `[]` brackets to access elements of the data. For example, to access the fourth row you would type `data[4,]`. You could also access the *site* column using `data[,5]` as this is the 5th column. Note to access a certain row the number goes **before** the comma and the column number goes **after**. A blank either side means access **all** that row or column.
 
 Run the following commands and see if you can work out what they're doing. Use the ## to write your own comments in your script.
 
@@ -161,11 +164,28 @@ str(data)
 table(data$site)
 summary(data$value)
 median(data$value)
-boxplot(data$value~data$site)
+boxplot(data$value ~ data$site)
+?mapply ## what do you expect this function to do?
+mapply(summary, data[,5:6])
+?aggregate
+aggregate(data$value, by = list(data$site),mean) ## what does this give you?
 ```
+
+
+### Save your script
+
+**File >> Save** or **Ctrl S**
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Emblem-important-black.svg/1024px-Emblem-important-black.svg.png){width=10%}](https://whattheyforgot.org/save-source.html)**Everything that really matters should be achieved through code that you save.**
 
 ### Week One "Homework"
 
 The following activities rely on you having read in the ecoli data you downloaded in class as the object **data**.
 
-- calculate the mean of the value column and save it as the object **mean.val** [HINT: to save the median of the value column as **median.val** you might use `median.val <- median(data$value)` ]
+- calculate the mean of the *value* column and save it as the object **mean.val** [HINT: to save the median of the value column as **median.val** you might use `median.val <- median(data$value)` ]
+
+- find the 0.99 quantile of the *value* column and save it as the object **nn.quantile** [HINT: running `quantile(data$value, probs = 0.95)` will calculate the quantile corresponding to a probability of 0.95]
+
+- create an object called **loc.max** containing the maximum values of *value* at each location [HINT: use the `aggregate` and `max` functions]
+
+If you want to ``mark" you homework run this command.
