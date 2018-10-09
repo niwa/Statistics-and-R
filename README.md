@@ -3,7 +3,7 @@
 ### 2018 Dates
 #### Time: 2--3pm
 #### Venue: VC A, Hamilton, NIWA
-* 22nd October 2018---Introduction to **R** and data checking
+* 19th October 2018---Introduction to **R** and data checking
 * 29th October 2018---Plotting and exploratory data analysis
 * 5th November 2018---Hypothesis testing 
 * 12th November 2018---Make your own hypothesis test
