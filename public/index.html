@@ -242,7 +242,7 @@ div.tocify {
 <li><p><strong>Syntax</strong>: how the language is written and what characters mean.</p></li>
 <li><p><strong>Function</strong>: sort of like a rule that dictates what you want to calculate.</p></li>
 <li><p><strong>Argument</strong>: an object you would give a function to calculate something.</p></li>
-<li><p><strong>Package</strong>: a collection/suite of functions/commands.</p></li>
+<li><p><strong>Package</strong>: a collection/suite of functions/commands. If you want to use a specific package you must first install it: run <code>install.packages(&quot;name_of_package&quot;)</code> in <strong>R</strong> (you only need to do this once, think of it as downloading a book to your digital library). To then use the functionality offered by that package you need to call the package so that <strong>R</strong> knows where to look, kind of like requesting a specific book from your library. To call up the package run <code>library(name_of_package)</code> in R (you need to do this once in each <strong>R</strong> session you want to access the package’s functionality).</p></li>
 </ul>
 </div>
 <div id="dont-have-a-dirty-workspace" class="section level3">
@@ -369,9 +369,10 @@ aggregate(data$value, by = list(data$site),mean) ## what does this give you?</co
 <ul>
 <li><p>calculate the mean of the <em>value</em> column and save it as the object <strong>mean.val</strong> [HINT: to save the median of the value column as <strong>median.val</strong> you might use <code>median.val &lt;- median(data$value)</code> ]</p></li>
 <li><p>find the 0.99 quantile of the <em>value</em> column and save it as the object <strong>nn.quantile</strong> [HINT: running <code>quantile(data$value, probs = 0.95)</code> will calculate the quantile corresponding to a probability of 0.95]</p></li>
+<li><p>install and then load the package <strong>devtools</strong> [Hint: to install the package <strong>mgcv</strong> you would run <code>install.packages(&quot;mgcv&quot;)</code> and to load it you might run <code>library(mgcv)</code>]</p></li>
 <li><p>create an object called <strong>loc.max</strong> containing the maximum values of <em>value</em> at each location [HINT: use the <code>aggregate</code> and <code>max</code> functions]</p></li>
 </ul>
-<p>If you want to ``mark&quot; you homework run this command.</p>
+<p>If you want to “mark” you homework run this command <code>devtools::source_url(&quot;https://raw.githubusercontent.com/cmjt/scripts/master/markR/week_one.r&quot;, sha1 = &quot;bf36d6e8b332d73adbc42391c098edac4678b19e&quot;)</code>.</p>
 </div>
 </div>
 

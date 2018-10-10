@@ -45,7 +45,7 @@ The section with the curser is called the **Console**. To test all is working, w
 
 - **Argument**: an object you would give a function to calculate something.
 
-- **Package**: a collection/suite of functions/commands. 
+- **Package**: a collection/suite of functions/commands. If you want to use a specific package you must first install it: run `install.packages("name_of_package")` in **R** (you only need to do this once, think of it as downloading a book to your digital library). To then use the functionality offered by that package you need to call the package so that **R** knows where to look, kind of like requesting a specific book from your library. To call up the package run `library(name_of_package)` in R (you need to do this once in each **R** session you want to access the package's functionality).
 
 ### Don't have a dirty workspace
 
@@ -186,6 +186,10 @@ The following activities rely on you having read in the ecoli data you downloade
 
 - find the 0.99 quantile of the *value* column and save it as the object **nn.quantile** [HINT: running `quantile(data$value, probs = 0.95)` will calculate the quantile corresponding to a probability of 0.95]
 
+- install and then load the package **devtools** [Hint: to install the package **mgcv** you would run `install.packages("mgcv")` and to load it you might run `library(mgcv)`]
+
 - create an object called **loc.max** containing the maximum values of *value* at each location [HINT: use the `aggregate` and `max` functions]
 
-If you want to ``mark" you homework run this command.
+
+
+If you want to "mark" you homework run this command `devtools::source_url("https://raw.githubusercontent.com/cmjt/scripts/master/markR/week_one.r", sha1 = "bf36d6e8b332d73adbc42391c098edac4678b19e")`.
