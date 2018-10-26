@@ -13,7 +13,7 @@
 
 ### Tools
 
-* [All classroom materials](https://jonestoddcm.apps.niwa.local/Statistics-and-R)
+* [All classroom materials](https://niwa.github.io/Statistics-and-R/)
 * In class [Socrative quiz link](https://b.socrative.com/login/student/) to enter the **STATSANDR** room
 
 ### Other online **R** tutorials
