@@ -14,7 +14,6 @@
 ### Tools
 
 * [All classroom materials](https://jonestoddcm.apps.niwa.local/Statistics-and-R)
-* In class [Chatzy link](http://www.chatzy.com/54389800096977) for online chat and questions (will be monitored by a stats gremlin)
 * In class [Socrative quiz link](https://b.socrative.com/login/student/) to enter the **STATSANDR** room
 
 ### Other online **R** tutorials

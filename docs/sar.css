@@ -1,0 +1,7 @@
+.toggle {
+  height: 2.20em;
+  overflow-y: hidden;
+}
+.toggle.open {
+  height: auto;
+}

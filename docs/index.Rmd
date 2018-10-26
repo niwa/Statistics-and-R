@@ -4,6 +4,7 @@ author: ""
 date: "2018"
 output: 
   html_document:
+      css: sar.css
       toc: true
       toc_depth: 3
       toc_float: true
@@ -35,7 +36,7 @@ The section with the curser is called the **Console**. To test all is working, w
 
 - **Console**: the text-based interface between you and the computer. This is where you tell the computer what to do.
 
-- **Script**: the code you write telling the computer what to do.
+- **Script**: the code file you write telling the computer what to do.
 
 - **Run**: the act of actually implementing your code telling the computer what to do.
 
@@ -101,7 +102,7 @@ Why is this? It's because `Charlotte` doesn't exist in **R** because I haven't c
 
 Armed with a little common sense most Errors are easy to decipher. If not ask Google...
 
-## Introduction to R
+## Introduction to R (First practical session)
 
 ### Setting your "working directory"
 
@@ -135,6 +136,7 @@ Functions to read in the two main types of data file extensions are listed below
 data <- read.csv("path/to/your/file.csv")
 ## read in a .txt file
 data <- read.table("path/to/your/file.txt")
+## NOTE for Windows machines instead of / use \\ (e.g., "C:\\Users\\Charlotte\\Documents\\file.csv")
 ```
 
 In addition, **RStudio** offers a point and click version: **Import Dataset** (top right panel).
@@ -144,7 +146,7 @@ Let's read in a `.csv` file. First download [this file](https://git.niwa.local/j
 ```{r read in csv,echo = 2:3}
 setwd("../data")
 ## read the file into R
-data <- read.csv("ecoli.csv") ## or the replace the .csv file name with the file name you've chosen
+ecoli <- read.csv("ecoli.csv") ## or the replace the .csv file name with the file name you've chosen
 ```
 
 ### Inspecting and accessing data
@@ -152,23 +154,23 @@ data <- read.csv("ecoli.csv") ## or the replace the .csv file name with the file
 Let's look at the first few rows of the data.
 
 ```{r head}
-head(data)
+head(ecoli)
 ```
 
-To access a specific element of the data we use the `$` character. For example, to access the column of sites you would use `data$site`. Alternatively you can use the `[]` brackets to access elements of the data. For example, to access the fourth row you would type `data[4,]`. You could also access the *site* column using `data[,5]` as this is the 5th column. Note to access a certain row the number goes **before** the comma and the column number goes **after**. A blank either side means access **all** that row or column.
+To access a specific element of the data we use the `$` character. For example, to access the column of sites you would use `ecoli$site`. Alternatively you can use the `[]` brackets to access elements of the ecoli. For example, to access the fourth row you would type `ecoli[4,]`. You could also access the *site* column using `ecoli[,5]` as this is the 5th column. Note to access a certain row the number goes **before** the comma and the column number goes **after**. A blank either side means access **all** that row or column.
 
 Run the following commands and see if you can work out what they're doing. Use the ## to write your own comments in your script.
 
 ```{r, eval = FALSE}
-str(data)
-table(data$site)
-summary(data$value)
-median(data$value)
-boxplot(data$value ~ data$site)
+str(ecoli)
+table(ecoli$site)
+summary(ecoli$value)
+median(ecoli$value)
+boxplot(ecoli$value ~ ecoli$site)
 ?mapply ## what do you expect this function to do?
-mapply(summary, data[,5:6])
+mapply(summary, ecoli[,5:6])
 ?aggregate
-aggregate(data$value, by = list(data$site),mean) ## what does this give you?
+aggregate(ecoli$value, by = list(ecoli$site),mean) ## what does this give you?
 ```
 
 
@@ -180,7 +182,7 @@ aggregate(data$value, by = list(data$site),mean) ## what does this give you?
 
 ### Week One "Homework"
 
-The following activities rely on you having read in the ecoli data you downloaded in class as the object **data**.
+The following activities rely on you having read in the ecoli data you downloaded in class as the object **data** (not **ecoli** as above).
 
 - calculate the mean of the *value* column and save it as the object **mean.val** [HINT: to save the median of the value column as **median.val** you might use `median.val <- median(data$value)` ]
 
@@ -195,3 +197,177 @@ The following activities rely on you having read in the ecoli data you downloade
 If you want to "mark" you homework run this command `devtools::source_url("https://raw.githubusercontent.com/cmjt/scripts/master/markR/week_one.r", sha1 = "bf36d6e8b332d73adbc42391c098edac4678b19e")`.
 
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://swcarpentry.github.io/r-novice-inflammation/01-starting-with-data/index.html)**Didn't think that was enough**
+
+
+## Plotting and exploratory data analysis (Second practical session)
+
+Some of this session will use the Ecoli dataset we used last week. If you haven't already done so please download [this file](https://git.niwa.local/jonestoddcm/Statistics-and-R/blob/master/data/ecoli.csv).
+
+To load the data into your R session either use the **Import Dataset** (top right panel) or the R command `read.csv()` covered [here](#reading-in-data)
+
+Let's have a look again at the data. Try running all or just a couple of the following commands (these assume your data is called **ecoli**)
+
+```{r str, eval = FALSE}
+str(ecoli) ## prints a summary of the components of the dataset to screen
+head(ecoli) ## prints the first 6 observetions to the screen
+tail(ecoli) ## prints the last 6 observetions to the screen
+head(ecoli,n = 25) ## prints the first 25 observetions to the screen
+```
+
+### Function arguments
+
+Last time we learnt that an R **function** (a type or calculation or rule) typically has **arguments** (options or data you want to use in the calculation). 
+
+It is worth noting that:
+
+- R functions arguments can be matched positionally or by name. Therefore the following calls to **mean** are equivalent `mean(ecoli$value)`
+`mean(x = ecoli$value)`, `mean(x = ecoli$value, na.rm = FALSE)`,  and `mean(na.rm = FALSE, x = ecoli$value)`. Try it for yourself.
+
+- You can mix positional matching with matching by name. When an argument is matched by name, it is “taken out” of the argument list and the remaining unnamed arguments are matched in the order that they are listed in the function definition. For example, try`mean(na.rm = FALSE, ecoli$value)`. 
+
+
+### Basic descriptive (summary) statistics
+
+#### Measures of centrality
+
+```{r basic des}
+mean(ecoli$value) ## mean value
+median(ecoli$value) ## median value
+
+```
+
+#### Measures of spread
+
+
+```{r spread}
+range(ecoli$value) ## range
+var(ecoli$value) ## variance
+sd(ecoli$value) ## standard deviation
+min(ecoli$value) ## minimum
+max(ecoli$value) ## maximum
+```
+
+#### Other descriptive statistics
+
+```{r other des}
+quantile(ecoli$value, probs = c(0.25,0.75)) ## quantiles corresponding to the given probabilities ()
+summary(ecoli$value) ## summary of the data
+fivenum(ecoli$value) ## Tukey's five number summary (minimum, lower-hinge, median, upper-hinge, maximum) 
+
+```
+
+### Summary statistics for multiple columns
+
+
+For the following excersise we will be using data already "in" R. Run `data(airquality)` to access this data followed by `?airquality` to read about what this dataset contains.
+
+Try using the `mapply()` function touched on in [this section](#inspecting-and-accessing-data) coupled with the summary statistics above to best summarise the airquality data.
+
+```{r mapp}
+## getting maens of all columns
+mapply(mean,airquality,2) ## first argument the function, second argument the the name of the data frame, third the index 1 = rows, 2 = columns
+## Now try
+mapply( mean,airquality,2, na.rm = TRUE) ## the extra argument  ignores the NA values when evaluating the function this is because the na.rm argument is an option of the function mean, and so to tell mapply to parse it in we add it as an extra argument
+
+```
+
+### Plotting data
+
+For the following excersise we will again be using data already "in" R as well as both the airquality and Ecoli data above. Run `data(npk)` to access this data followed by `?npk` to read about what this dataset contains. Now try printing the data to screen (don't worry there are only 24 observations) `npk`. What do you see? What does `table(npk[,2:4])` do?
+
+#### The humble plot() function
+
+Run the following and notice the different plots produced. This is because the **plot()** function tries its best to work out the type of data you are passing it and makes the most appropriate plot (mostly...)
+
+```{r, eval = FALSE}
+plot(ecoli$value)
+plot(ecoli$location)
+plot(ecoli$date, ecoli$value)
+pairs(airquality, panel = panel.smooth, main = "airquality data")
+```
+
+
+#### Other plots
+
+```{r other plots, eval = FALSE}
+pairs(airquality, panel = panel.smooth, main = "Airquality data") ## look at possible relationships
+hist(npk$yield, main = "Histogram of yield") ## look at distribution using a histogram
+barplot(table(ecoli[,4])) ## bar plot of counts of ecoli locations
+boxplot(npk$yield ~ npk$block, ylab = "NPK yield", xlab = "Block number") ## boxplot of NPK yield by block (NOTE the ~ here)
+## Whay about a density and rug plot (this requires two calls)
+plot(density(ecoli$value), main = "Ecoli desnity") ## plot a smoothe density plot of ecoli
+rug(ecoli$value) ## add a rug plot to it
+```
+
+You'll have noticed a few times we have customised the titles or axis labels of the plots above. Try finding out what other customization is possible to each plot. [HINT: use `?plot` to see what arguments there are. What does `plot(npk$yield, type = "l", col = 3)` do?]
+
+#### Introducing the **ggplot2** package for plotting. 
+
+To install the package **ggplot2** run `install.packages("ggplot2")` and to load run `library(ggplo2)`
+
+The **ggplot2** package is a suite of tools designed for data visualisation. Some people think this package makes it easier to visually asses your data. Using ggplot requires a slightly different syntax to base R. As you'll notice when running the code below the `+` symbol is used to "add" things to the plot
+
+```{r ggplot}
+library(ggplot2)
+ggplot(aes(x = block,y = yield),data = npk) + geom_boxplot() + ggtitle("NPK") ## boxplots of NPK by block. Is there a difference between blocks?
+ggplot(aes(x = site,y = value, color = as.factor(run)),data = ecoli) + geom_boxplot() + ggtitle("Ecoli values") + labs(color = "run number") ## boxplots of ecoli split by site and coloures by run number. Is there a difference between sites
+ggplot(data = airquality, aes(x = Temp, fill = as.factor(Month))) + geom_density(alpha = .3)  + labs(fill = "Month number") ## density plots NY temperature by month
+```
+
+Try changing some of the arguments and see what happens (e.g., what does `ggplot(aes(x = site,y = value, color = location),data = ecoli) + geom_boxplot() + ggtitle("Ecoli values") ` show you.)
+
+In each of the plots above some values are shown split by some condition (e.g., month, location). Do there appear to be differences? How might you assess if these differences are "significant"? Come along next time to find out.
+
+### Week two "Homework"
+
+Make a barplot showing the means of the Ecoli values at each site with error bars showing +/- 2 times the standard error around the mean (two posibilities shown below). NOTE: the standard error of the mean of some data can be calculated as the standard deviation divided by the sqare root of the number of observations, i.e., $$ se = \frac{sd}{\sqrt{(n)}}. $$
+
+HINT: You will need to caclculate the means and sandard errors for each site. Research the `points()` and `arrows()` functions to add stuff to your barplot. To save the x coordinated used in a barplot you will need to save it as an object (e.g., running `bar <- barplot(table(ecoli[,4]))` will create a vector of x coordinates of each bar called **bar**.)
+
+```{r w2 homework,echo = FALSE}
+mns <- aggregate(ecoli$value, by = list(ecoli$site), mean) ## calculate means for each site
+ses <- aggregate(ecoli$value, by = list(ecoli$site),  sd)$x/sqrt(aggregate(ecoli$value, by = list(ecoli$site),  length)$x) ## calculate standard errors for each site
+plot.data <- data.frame(sites = mns$Group.1,means = mns$x,ses = ses, upper =  mns$x + 2*ses, lower =  mns$x - 2*ses) ## create data frame of data (optional for ggplot)
+
+
+## Using base graphics
+b.cent <- barplot(mns$x, names.arg = mns$Group.1,axes = FALSE, ylim = c(0,210)) ## need to "create" the barplot to return centre locations of each bar
+points(b.cent,mns$x, pch = 20,xpd = TRUE) ## add the mean values
+arrows(b.cent, mns$x - 2*ses, b.cent, mns$x + 2*ses, lwd = 2,code = 0) ## put in the erroe lines
+
+## Using ggplot2
+library(ggplot2)
+ggplot(plot.data, aes(x = sites, y = means)) + 
+    geom_bar(position = position_dodge(), stat="identity") +
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) + ylab("Mean of Ecoli") + xlab("Sites")
+```
+
+<div class="toggle"><button>Solution</button>
+```{r w2 homework soln,eval = FALSE}
+mns <- aggregate(ecoli$value, by = list(ecoli$site), mean) ## calculate means for each site
+ses <- aggregate(ecoli$value, by = list(ecoli$site),  sd)$x/sqrt(aggregate(ecoli$value, by = list(ecoli$site),  length)$x) ## calculate standard errors for each site
+plot.data <- data.frame(sites = mns$Group.1,means = mns$x,ses = ses, upper =  mns$x + 2*ses, lower =  mns$x - 2*ses) ## create data frame of data (optional for ggplot)
+
+
+## Using base graphics
+b.cent <- barplot(mns$x, names.arg = mns$Group.1,axes = FALSE, ylim = c(0,210)) ## need to "create" the barplot to return centre locations of each bar
+points(b.cent,mns$x, pch = 20,xpd = TRUE) ## add the mean values
+arrows(b.cent, mns$x - 2*ses, b.cent, mns$x + 2*ses, lwd = 2,code = 0) ## put in the erroe lines
+
+## Using ggplot2
+library(ggplot2)
+ggplot(plot.data, aes(x = sites, y = means)) + 
+    geom_bar(position = position_dodge(), stat="identity") +
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) + ylab("Mean of Ecoli") + xlab("Sites")
+```
+</div>
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://datacarpentry.org/R-ecology-lesson/04-visualization-ggplot2.html)**Try some more data visualization with ggplot2**
+
+<!-- java script code for toggle button--> 
+<script>
+  $(".toggle").click(function() {
+    $(this).toggleClass("open");
+  });
+</script>
+
