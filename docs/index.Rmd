@@ -259,9 +259,9 @@ fivenum(ecoli$value) ## Tukey's five number summary (minimum, lower-hinge, media
 ### Summary statistics for multiple columns
 
 
-For the following excersise we will be using data already "in" R. Run `data(airquality)` to access this data followed by `?airquality` to read about what this dataset contains.
+For the following exercise we will be using data already "in" R. Run `data(airquality)` to access this data followed by `?airquality` to read about what this dataset contains.
 
-Try using the `mapply()` function touched on in [this section](#inspecting-and-accessing-data) coupled with the summary statistics above to best summarise the airquality data.
+Try using the `mapply()` function touched on in [this section](#inspecting-and-accessing-data) coupled with the summary statistics above to best summarize the airquality data.
 
 ```{r mapp}
 ## getting maens of all columns
@@ -273,7 +273,7 @@ mapply( mean,airquality,2, na.rm = TRUE) ## the extra argument  ignores the NA v
 
 ### Plotting data
 
-For the following excersise we will again be using data already "in" R as well as both the airquality and Ecoli data above. Run `data(npk)` to access this data followed by `?npk` to read about what this dataset contains. Now try printing the data to screen (don't worry there are only 24 observations) `npk`. What do you see? What does `table(npk[,2:4])` do?
+For the following exercise we will again be using data already "in" R as well as both the airquality and Ecoli data above. Run `data(npk)` to access this data followed by `?npk` to read about what this dataset contains. Now try printing the data to screen (don't worry there are only 24 observations) `npk`. What do you see? What does `table(npk[,2:4])` do?
 
 #### The humble plot() function
 
@@ -299,13 +299,13 @@ plot(density(ecoli$value), main = "Ecoli desnity") ## plot a smoothe density plo
 rug(ecoli$value) ## add a rug plot to it
 ```
 
-You'll have noticed a few times we have customised the titles or axis labels of the plots above. Try finding out what other customization is possible to each plot. [HINT: use `?plot` to see what arguments there are. What does `plot(npk$yield, type = "l", col = 3)` do?]
+You'll have noticed a few times we have customized the titles or axis labels of the plots above. Try finding out what other customization is possible to each plot. [HINT: use `?plot` to see what arguments there are. What does `plot(npk$yield, type = "l", col = 3)` do?]
 
 #### Introducing the **ggplot2** package for plotting. 
 
 To install the package **ggplot2** run `install.packages("ggplot2")` and to load run `library(ggplo2)`
 
-The **ggplot2** package is a suite of tools designed for data visualisation. Some people think this package makes it easier to visually asses your data. Using ggplot requires a slightly different syntax to base R. As you'll notice when running the code below the `+` symbol is used to "add" things to the plot
+The **ggplot2** package is a suite of tools designed for data visualization. Some people think this package makes it easier to visually asses your data. Using ggplot requires a slightly different syntax to base R. As you'll notice when running the code below the `+` symbol is used to "add" things to the plot
 
 ```{r ggplot}
 library(ggplot2)
@@ -320,9 +320,9 @@ In each of the plots above some values are shown split by some condition (e.g., 
 
 ### Week two "Homework"
 
-Make a barplot showing the means of the Ecoli values at each site with error bars showing +/- 2 times the standard error around the mean (two posibilities shown below). NOTE: the standard error of the mean of some data can be calculated as the standard deviation divided by the sqare root of the number of observations, i.e., $$ se = \frac{sd}{\sqrt{(n)}}. $$
+Make a barplot showing the means of the Ecoli values at each site with error bars showing +/- 2 times the standard error around the mean (two possibilities shown below). NOTE: the standard error of the mean of some data can be calculated as the standard deviation divided by the square root of the number of observations, i.e., $$ se = \frac{sd}{\sqrt{(n)}}. $$
 
-HINT: You will need to caclculate the means and sandard errors for each site. Research the `points()` and `arrows()` functions to add stuff to your barplot. To save the x coordinated used in a barplot you will need to save it as an object (e.g., running `bar <- barplot(table(ecoli[,4]))` will create a vector of x coordinates of each bar called **bar**.)
+HINT: You will need to calculate the means and standard errors for each site. Research the `points()` and `arrows()` functions to add stuff to your barplot. To save the x coordinated used in a barplot you will need to save it as an object (e.g., running `bar <- barplot(table(ecoli[,4]))` will create a vector of x coordinates of each bar called **bar**.)
 
 ```{r w2 homework,echo = FALSE}
 mns <- aggregate(ecoli$value, by = list(ecoli$site), mean) ## calculate means for each site
