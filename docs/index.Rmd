@@ -364,6 +364,91 @@ ggplot(plot.data, aes(x = sites, y = means)) +
 
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://datacarpentry.org/R-ecology-lesson/04-visualization-ggplot2.html)**Try some more data visualization with ggplot2**
 
+
+## Hypothesis testing (Third practical session)
+
+### Confidence intervals
+
+A confidence interval can be thought of as a plausiable range within which we might expect the true value of some unknown population parameter to lie. The level of "confidence" associated with this interval typically reflects the proportion of time we would expect an interval to contain the true value of the parameter. For example, if we were making inference about the population mean and based on a single sample had calculated a sample mean of 52 and a 95% confidence interval of (49,55), then when repeating the sampling 100 times we would expect the "true" mean to be between 49 and 55 95 times.
+
+
+#### Bootstrapping to calculate a confidence interval for the population mean.
+
+Using the airquality data we're going to bootstrap for the confidence interval of the population mean
+
+```{r boot}
+y <- airquality$Temp ## create a vector of te,perature values called y
+N <- 10000 ## The number of times to resample
+Y <- numeric(N) ## Create a vector of 10000 zeros, this is where we'll store the resampled means
+## Note R is case sensitive so Y and y are different
+## Code to carry out the reampling
+for(i in 1:N){
+  ## calculate the mean from a sample
+  ## of size = length y from y
+  ## with replacement
+  Y[i] <- mean(sample(y,length(y), replace = TRUE))
+}
+## plot a histogram of these bootstrap samples
+hist(Y)
+## print a summary of these bootstrap values
+summary(Y) ## note as we are resampling randomly the values won't be exactly the same for everyone.
+```
+We can see that the mean of **Y** is roughly the same as the original sample (`r round(mean(y),3)`), but there is a lot less scatter. A 95% bootstrap conficence interval for the expected air temperature is given by
+
+```{r expect}
+quantile(Y,probs = c(0.025, 0.975)) ## i.e., 2.5% in lower tail and 2.5% in upper tail
+```
+
+So we can say that the expected air temperature (in NY over the dates in the dataset) is somewhere between `r round(quantile(Y,probs = c(0.025)),3)` and `r round(quantile(Y,probs = c(0.975)),3)` 95% of the time.
+
+#### Boostrapping and the t-distribution
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Emblem-important-black.svg/1024px-Emblem-important-black.svg.png){width=10%}](https://www.khanacademy.org/math/ap-statistics/sampling-distribution-ap/sampling-distribution-mean/v/central-limit-theorem)**The sampling distribution of the sample means approaches a normal distribution as the sample size gets larger. Otherwise know as the central limit theorem**
+
+Using the standard error of an estimate we can calculate a 95% conficence interval (CI). For the population mean a 95% confidence interval can is calculated as $$\bar \mu \pm t_{97.5}\: se_\mu$$ where $\bar \mu$ is the sample mean, $se_\mu$ is the standard error of the mean, and $t_{97.5}$ is the t-multplier (the 97.5% quantile of the t-distribution). This multiplier is based on the confidence level desiered and depends on the sample size. A standard error of some estimated parameter is a measure of accuracy of the estimate. The standard error of a mean, $se_\mu$ can be written as $$ se_\mu = \frac{sd}{\sqrt{(n)}} $$ where $sd$ is the standard deviation of the sample and $n$ is the sample size. 
+
+```{r compare}
+## Now let's compare the bootstrap CI to the one based on the t-distribution
+## bootstrap 
+quantile(Y,probs = c(0.025, 0.975)) ## i.e., 2.5% in lower tail and 2.5% in upper tail
+## t-distribution
+mean(y) + c(-1,1)*qt(1 - 0.025, df = length(y) - 1)*sd(y)/sqrt(length(y)) ## can you work out what each bit of this code is doing?
+
+```
+
+From this we can see that the bootstrap and the t-distribution are equivalent.
+
+### One sample t-test and a NULL linear model
+
+```{r t-test}
+## a one sample t-test
+t.test(y)
+##  fit the NULL model 
+model.null <- lm(y ~ 1) ## and R object of this fitted model is created
+summary(model.null) ## print summary (NOTE the estimate of the population mean is called "Intercept")
+## let's calculate the confidence interval
+confint(model.null)
+```
+
+From the output we can see that the one sample t-test is an example of a linear model.
+
+NOTE: A paired comparisons is the same as a one sample t-test. This is when two measurements are taken from the same person say, which is an example of a repeated measures (twice) study.
+
+#### Independent comparisons (a two sample t-test)
+
+```{r ecoli t-test}
+t.test(value ~ site, data = ecoli)
+## Can this be formulated as a linear model?
+summary(lm(value ~ site, data = ecoli))
+```
+
+
+#### Inference when there are more than two samples
+
+```{r anova}
+
+```
+
 <!-- java script code for toggle button--> 
 <script>
   $(".toggle").click(function() {
