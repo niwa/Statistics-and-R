@@ -194,7 +194,7 @@ The following activities rely on you having read in the ecoli data you downloade
 
 
 
-If you want to "mark" you homework run this command `devtools::source_url("https://raw.githubusercontent.com/cmjt/scripts/master/markR/week_one.r", sha1 = "bf36d6e8b332d73adbc42391c098edac4678b19e")`.
+If you want to "mark" you homework run this command `devtools::source_url("https://raw.githubusercontent.com/cmjt/scripts/master/markR/week_one.r", sha1 = "262bfa2514223d04ca68eaff5f306b8d33c87b30")`.
 
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://swcarpentry.github.io/r-novice-inflammation/01-starting-with-data/index.html)**Didn't think that was enough**
 
