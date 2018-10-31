@@ -443,11 +443,28 @@ summary(lm(value ~ site, data = ecoli))
 ```
 
 
-#### Inference when there are more than two samples
+### Inference when there are more than two samples
 
-```{r anova}
+The data used in this section is available here. This `.csv` file contains the dates and daily avereged temprature values in Auckland (see [this](#reading-in-data) section to import this into your session). We are going to use the `lubridate` package to deal with dates in **R**. To install this package run `install.pacages("lubridate")` (remeber to run `library(lubridate)` before you use the functionality it contains.)
+
+```{r aov.dat}
+library(lubridate) ## load package
+auck <- read.csv("../data/auckland.csv") ## read in data. This file path will be different for everyone
+str(auck) ## let's have a look at the structure
+## we're going to use the month function from lubridate to create another column of months
+auck$MONTH <- month(auck$DATE,label = TRUE)
+str(auck) ## notice the other data added
+boxplot(auck$TAVG ~ auck$MONTH) ## is there a difference between months (all other teporal info ignored)
 
 ```
+
+```{r anova}
+## One-Way ANOVA 
+anova <- aov(auck$TAVG ~ auck$MONTH) ## carry out anova
+summary(anova)
+```
+
+It seems that at least one month has a significantly different value on average than one other. How do we find which ones? Try running `TukeyHSD(anova)` now `plot(TukeyHSD(anova))`.
 
 <!-- java script code for toggle button--> 
 <script>
