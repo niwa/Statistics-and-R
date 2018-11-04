@@ -141,7 +141,7 @@ data <- read.table("path/to/your/file.txt")
 
 In addition, **RStudio** offers a point and click version: **Import Dataset** (top right panel).
 
-Let's read in a `.csv` file. First download [this file](https://git.niwa.local/jonestoddcm/Statistics-and-R/blob/master/data/ecoli.csv) into your working directory, The file includes some Ecoli data.
+Let's read in a `.csv` file. First download [this file](https://raw.githubusercontent.com/niwa/Statistics-and-R/github/data/ecoli.csv) into your working directory (right click and "Save As"). The file includes some Ecoli data.
 
 ```{r read in csv,echo = 2:3}
 setwd("../data")
@@ -201,7 +201,7 @@ If you want to "mark" you homework run this command `devtools::source_url("https
 
 ## Plotting and exploratory data analysis (Second practical session)
 
-Some of this session will use the Ecoli dataset we used last week. If you haven't already done so please download [this file](https://git.niwa.local/jonestoddcm/Statistics-and-R/blob/master/data/ecoli.csv).
+Some of this session will use the Ecoli dataset we used last week. If you haven't already done so please download [this file](https://raw.githubusercontent.com/niwa/Statistics-and-R/github/data/ecoli.csv) (right click and "Save As").
 
 To load the data into your R session either use the **Import Dataset** (top right panel) or the R command `read.csv()` covered [here](#reading-in-data)
 
@@ -369,7 +369,7 @@ ggplot(plot.data, aes(x = sites, y = means)) +
 
 ### Confidence intervals
 
-A confidence interval can be thought of as a plausiable range within which we might expect the true value of some unknown population parameter to lie. The level of "confidence" associated with this interval typically reflects the proportion of time we would expect an interval to contain the true value of the parameter. For example, if we were making inference about the population mean and based on a single sample had calculated a sample mean of 52 and a 95% confidence interval of (49,55), then when repeating the sampling 100 times we would expect the "true" mean to be between 49 and 55 95 times.
+A confidence interval can be thought of as a plausiable range within which we might expect the true value of some unknown population parameter to lie. The level of "confidence" associated with this interval typically reflects the proportion of time we would expect an interval to contain the true value of the parameter. For example, if we took 100 sampes, calculating the 95% confidence interval for the mean each time, we would expect the intervals to contain the "true" mean 95 times.
 
 
 #### Bootstrapping to calculate a confidence interval for the population mean.
@@ -445,7 +445,7 @@ summary(lm(value ~ site, data = ecoli))
 
 ### Inference when there are more than two samples
 
-The data used in this section is available here. This `.csv` file contains the dates and daily avereged temprature values in Auckland (see [this](#reading-in-data) section to import this into your session). We are going to use the `lubridate` package to deal with dates in **R**. To install this package run `install.pacages("lubridate")` (remeber to run `library(lubridate)` before you use the functionality it contains.)
+The data used in this section is available [here](https://raw.githubusercontent.com/niwa/Statistics-and-R/github/data/auckland.csv) (right click and "Save As"). This `.csv` file contains the dates and daily avereged temprature values in Auckland (see [this](#reading-in-data) section to import this into your session). We are going to use the `lubridate` package to deal with dates in **R**. To install this package run `install.pacages("lubridate")` (remeber to run `library(lubridate)` before you use the functionality it contains.)
 
 ```{r aov.dat}
 library(lubridate) ## load package
@@ -465,6 +465,13 @@ summary(anova)
 ```
 
 It seems that at least one month has a significantly different value on average than one other. How do we find which ones? Try running `TukeyHSD(anova)` now `plot(TukeyHSD(anova))`.
+
+
+### Week Three "Homework"
+
+For [this quiz](https://b.socrative.com/login/student/) (Room Name **STATSANDR**) you will need to work with [daily averaged temperatures in Christchurch](https://raw.githubusercontent.com/niwa/Statistics-and-R/github/data/christchurch.csv) (download and load these data into your R session as you did with the Auckland data above).
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://www.statisticshowto.datasciencecentral.com/probability-and-statistics/hypothesis-testing/anova/)**ANOVA Test: Definition, Types, Examples**
 
 <!-- java script code for toggle button--> 
 <script>
