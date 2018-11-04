@@ -369,7 +369,7 @@ ggplot(plot.data, aes(x = sites, y = means)) +
 
 ### Confidence intervals
 
-A confidence interval can be thought of as a plausiable range within which we might expect the true value of some unknown population parameter to lie. The level of "confidence" associated with this interval typically reflects the proportion of time we would expect an interval to contain the true value of the parameter. For example, if we took 100 sampes, calculating the 95% confidence interval for the mean each time, we would expect the intervals to contain the "true" mean 95 times.
+A confidence interval can be thought of as a plausible range within which we might expect the true value of some unknown population parameter to lie. The level of "confidence" associated with this interval typically reflects the proportion of time we would expect an interval to contain the true value of the parameter. For example, if we took 100 samples, calculating the 95% confidence interval for the mean each time, we would expect the intervals to contain the "true" mean 95 times.
 
 
 #### Bootstrapping to calculate a confidence interval for the population mean.
@@ -393,7 +393,7 @@ hist(Y)
 ## print a summary of these bootstrap values
 summary(Y) ## note as we are resampling randomly the values won't be exactly the same for everyone.
 ```
-We can see that the mean of **Y** is roughly the same as the original sample (`r round(mean(y),3)`), but there is a lot less scatter. A 95% bootstrap conficence interval for the expected air temperature is given by
+We can see that the mean of **Y** is roughly the same as the original sample (`r round(mean(y),3)`), but there is a lot less scatter. A 95% bootstrap confidence interval for the expected air temperature is given by
 
 ```{r expect}
 quantile(Y,probs = c(0.025, 0.975)) ## i.e., 2.5% in lower tail and 2.5% in upper tail
@@ -405,7 +405,7 @@ So we can say that the expected air temperature (in NY over the dates in the dat
 
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Emblem-important-black.svg/1024px-Emblem-important-black.svg.png){width=10%}](https://www.khanacademy.org/math/ap-statistics/sampling-distribution-ap/sampling-distribution-mean/v/central-limit-theorem)**The sampling distribution of the sample means approaches a normal distribution as the sample size gets larger. Otherwise know as the central limit theorem**
 
-Using the standard error of an estimate we can calculate a 95% conficence interval (CI). For the population mean a 95% confidence interval can is calculated as $$\bar \mu \pm t_{97.5}\: se_\mu$$ where $\bar \mu$ is the sample mean, $se_\mu$ is the standard error of the mean, and $t_{97.5}$ is the t-multplier (the 97.5% quantile of the t-distribution). This multiplier is based on the confidence level desiered and depends on the sample size. A standard error of some estimated parameter is a measure of accuracy of the estimate. The standard error of a mean, $se_\mu$ can be written as $$ se_\mu = \frac{sd}{\sqrt{(n)}} $$ where $sd$ is the standard deviation of the sample and $n$ is the sample size. 
+Using the standard error of an estimate we can calculate a 95% confidence interval (CI). For the population mean a 95% confidence interval can is calculated as $$\bar \mu \pm t_{97.5}\: se_\mu$$ where $\bar \mu$ is the sample mean, $se_\mu$ is the standard error of the mean, and $t_{97.5}$ is the t-multiplier (the 97.5% quantile of the t-distribution). This multiplier is based on the confidence level desired and depends on the sample size. A standard error of some estimated parameter is a measure of accuracy of the estimate. The standard error of a mean, $se_\mu$ can be written as $$ se_\mu = \frac{sd}{\sqrt{(n)}} $$ where $sd$ is the standard deviation of the sample and $n$ is the sample size. 
 
 ```{r compare}
 ## Now let's compare the bootstrap CI to the one based on the t-distribution
@@ -424,7 +424,7 @@ From this we can see that the bootstrap and the t-distribution are equivalent.
 ## a one sample t-test
 t.test(y)
 ##  fit the NULL model 
-model.null <- lm(y ~ 1) ## and R object of this fitted model is created
+model.null <- lm(y ~ 1) ## an R object of this fitted model is created
 summary(model.null) ## print summary (NOTE the estimate of the population mean is called "Intercept")
 ## let's calculate the confidence interval
 confint(model.null)
@@ -442,10 +442,11 @@ t.test(value ~ site, data = ecoli)
 summary(lm(value ~ site, data = ecoli))
 ```
 
+HINT: Compare the Intercept estimate (`r round(coef(summary(lm(value ~ site, data = ecoli)))[1,1],2)`) of the linear model to the mean of the North Shore values (`r round(t.test(value ~ site, data = ecoli)$estimate[1],2)`). Now compare the sum of the Intercept estimate and the siteWaitemata coefficient (`r round(coef(summary(lm(value ~ site, data = ecoli)))[1,1] + coef(summary(lm(value ~ site, data = ecoli)))[2,1],2)`) to the mean of the Waitemata values (`r round(t.test(value ~ site, data = ecoli)$estimate[2],2)`). From this we can see that for a factor covariate the Intercept estimate (also called the baseline) is the estimate of the mean at the baseline factor level (in this case in the North Shore) and that the coefficient for siteWaitemata is the increase or decrease in the average value of Ecoli at Waitemata over the North Shore.
 
 ### Inference when there are more than two samples
 
-The data used in this section is available [here](https://raw.githubusercontent.com/niwa/Statistics-and-R/github/data/auckland.csv) (right click and "Save As"). This `.csv` file contains the dates and daily avereged temprature values in Auckland (see [this](#reading-in-data) section to import this into your session). We are going to use the `lubridate` package to deal with dates in **R**. To install this package run `install.pacages("lubridate")` (remeber to run `library(lubridate)` before you use the functionality it contains.)
+The data used in this section is available [here](https://raw.githubusercontent.com/niwa/Statistics-and-R/github/data/auckland.csv) (right click and "Save As"). This `.csv` file contains the dates and daily averaged temperature values in Auckland (see [this](#reading-in-data) section to import this into your session). We are going to use the `lubridate` package to deal with dates in **R**. To install this package run `install.pacages("lubridate")` (remember to run `library(lubridate)` before you use the functionality it contains.)
 
 ```{r aov.dat}
 library(lubridate) ## load package
@@ -454,7 +455,7 @@ str(auck) ## let's have a look at the structure
 ## we're going to use the month function from lubridate to create another column of months
 auck$MONTH <- month(auck$DATE,label = TRUE)
 str(auck) ## notice the other data added
-boxplot(auck$TAVG ~ auck$MONTH) ## is there a difference between months (all other teporal info ignored)
+boxplot(auck$TAVG ~ auck$MONTH) ## is there a difference between months (all other temporal info ignored)
 
 ```
 
