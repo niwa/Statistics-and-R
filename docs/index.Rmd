@@ -483,7 +483,7 @@ For [this quiz](https://b.socrative.com/login/student/) (Room Name **STATSANDR**
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](http://swcarpentry.github.io/r-novice-inflammation/02-func-R/index.html)**Writing functions in R**
 
 
-## Randomisation test
+## Lovebirds and Budgerigars
 
 The data we will be using can be downloaded from [here](https://raw.githubusercontent.com/b-steve/macrorhabdus/master/data/screening.csv) (once tab has opened right click and "Save As"). See [this section](#reading-in-data) to import this into your session.
 
@@ -550,8 +550,77 @@ par(las = 0)
 mtext("MO/HPF", side = 2, line = 2.5)
 
 ```
+### Permutation test
 
 
+```{r analysis}
+library(lubridate)
+## Extracting variables.
+date <- dmy(data$date)
+lovebird <- data$lovebird
+
+```
+
+```{r permutation, eval = FALSE}
+## Permutation test
+
+## Turning dates into day progression.
+day <- as.vector(date - date[1]) + 1
+## Lovebird variables.
+day.l <- day[!is.na(lovebird)]
+lovebird <- lovebird[!is.na(lovebird)]
+lovebird.std <- lovebird/sd(lovebird)
+
+## Treatment day limits.
+treat.lims <- day[c(18, 27)]
+## All possible start- and end-date pairings.
+start.perm <- 1:(max(day.l) - 31)
+end.perm <- start.perm + 31
+
+## Observed means for lovebird.
+obs.l <- mean(lovebird[day.l >= treat.lims[1] & day.l <= treat.lims[2]])
+obs.l.std <- mean(lovebird.std[day.l >= treat.lims[1] & day.l <= treat.lims[2]])
+## Doing permutations for lovebird.
+n.l <- length(start.perm)
+means.l <- numeric(n.l)
+means.l.std <- numeric(n.l)
+for (i in 1:n.l){
+    means.l[i] <- mean(lovebird[day.l >= start.perm[i] & day.l <= end.perm[i]])
+    means.l.std[i] <- mean(lovebird.std[day.l >= start.perm[i] & day.l <= end.perm[i]])
+}
+## Getting rid of periods with no observations.
+means.l <- means.l[is.finite(means.l)]
+means.l.std <- means.l.std[is.finite(means.l.std)]
+## Individual rank and p-value for lovebird.
+sum(means.l <= obs.l)
+mean(means.l <= obs.l)
+## Standardised results should be the same.
+sum(means.l.std <= obs.l.std)
+mean(means.l.std <= obs.l.std)
+## plot
+hist(means.l.std)
+abline(v = obs.l.std,lwd = 2, lty = 2)
+```
+
+### Week four "Homework"
+
+- Write an R function that carries out a permutation test as above taking 
+     - a vector of dates, 
+     - a corresponding vector of observations, and 
+     - a date range specifying treatment limits as arguments.
+- This function shoud output a vector of permuted means. 
+- Include an option to either carry out the permutation test on 
+     - the raw or 
+     - standardised values. 
+- Use the function on the lovebird and budgie data to carry out two hypothesis tests that the observed raw means are equal to any other permuted mean.  
+- Use this function to test the hypothesis that the observed sum of the budgie and lovebird standardised means during treatment is equal to any other possible permuted combinations.
+
+
+<div class="toggle"><button>Solution</button>
+```{r w4 homework soln,eval = FALSE}
+## write solution here
+```
+</div>
 <!-- java script code for toggle button--> 
 <script>
   $(".toggle").click(function() {
