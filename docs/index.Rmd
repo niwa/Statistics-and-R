@@ -401,6 +401,8 @@ quantile(Y,probs = c(0.025, 0.975)) ## i.e., 2.5% in lower tail and 2.5% in uppe
 
 So we can say that the expected air temperature (in NY over the dates in the dataset) is somewhere between `r round(quantile(Y,probs = c(0.025)),3)` and `r round(quantile(Y,probs = c(0.975)),3)` 95% of the time.
 
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](http://swcarpentry.github.io/r-novice-inflammation/15-supp-loops-in-depth/index.html)**Loops in R**
+
 #### Boostrapping and the t-distribution
 
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Emblem-important-black.svg/1024px-Emblem-important-black.svg.png){width=10%}](https://www.khanacademy.org/math/ap-statistics/sampling-distribution-ap/sampling-distribution-mean/v/central-limit-theorem)**The sampling distribution of the sample means approaches a normal distribution as the sample size gets larger. Otherwise know as the central limit theorem**
@@ -473,6 +475,82 @@ It seems that at least one month has a significantly different value on average 
 For [this quiz](https://b.socrative.com/login/student/) (Room Name **STATSANDR**) you will need to work with [daily averaged temperatures in Christchurch](https://raw.githubusercontent.com/niwa/Statistics-and-R/github/data/christchurch.csv) (download and load these data into your R session as you did with the Auckland data above).
 
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://www.statisticshowto.datasciencecentral.com/probability-and-statistics/hypothesis-testing/anova/)**ANOVA Test: Definition, Types, Examples**
+
+
+
+## Writing functions and coding your own hypothesis test (Fourth practical session)
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](http://swcarpentry.github.io/r-novice-inflammation/02-func-R/index.html)**Writing functions in R**
+
+
+## Randomisation test
+
+The data we will be using can be downloaded from [here](https://raw.githubusercontent.com/b-steve/macrorhabdus/master/data/screening.csv) (once tab has opened right click and "Save As"). See [this section](#reading-in-data) to import this into your session.
+
+The analysis below is part of a larger piece of work completed by [Ben Stevenson](https://unidirectory.auckland.ac.nz/profile/ben-stevenson) (all code is publically available [here](https://github.com/b-steve/macrorhabdus)).
+
+```{r read in data, echo = FALSE,message=FALSE}
+require(RCurl)
+data <- read.csv(text = getURL("https://raw.githubusercontent.com/b-steve/macrorhabdus/master/data/screening.csv"),  header = TRUE)
+```
+
+```{r fancy plot, echo = FALSE, results='asis',fig.cap="Code to produce the plot above can be found, courtesy of Ben Stevenson, [here](https://github.com/b-steve/macrorhabdus/blob/master/screening.r)."}
+library(lubridate)
+## Extracting variables.
+date <- dmy(data$date)
+lovebird <- data$lovebird
+budgie <- data$budgie
+
+## Making the plot.
+par(mfrow = c(2, 1), mar = c(0, 4, 0.5, 0), oma = c(4, 0, 0, 0) + 0.1, las = 1)
+## Making the lovebird half.
+plot.new()
+plot.window(xlim = range(date), ylim = c(0, max(lovebird, na.rm = TRUE)))
+## Limits of grey box.
+treat.start <- date[18] - 1
+treat.end <- date[27] + 1
+## Making the grey box.
+rect(treat.start, -20, treat.end, 100, col = "grey85", border = NA)
+box()
+## Horizontal line at 0.
+abline(h = 0, lty = "dashed")
+## Plotting lovebird data.
+lines(date[!is.na(lovebird)], lovebird[!is.na(lovebird)])
+points(date[!is.na(lovebird)], lovebird[!is.na(lovebird)], pch = 20)
+## Adding lovebird label.
+text(par("usr")[1] + grconvertX(0.1, from = "inches", to = "user") - grconvertX(0, from = "inches", to = "user"),
+     par("usr")[4] - (grconvertY(0.1, from = "inches", to = "user") - grconvertY(0, from = "inches", to = "user")),
+     labels = "Lovebird", adj = c(0, 1))
+axis(2)
+## Adding y-axis label.
+par(las = 0)
+mtext("MO/HPF", side = 2, line = 2.5)
+par(las = 1)
+## Making the budgie half.
+plot.new()
+plot.window(xlim = range(date), ylim = c(0, max(budgie, na.rm = TRUE)))
+## Making the grey box.
+rect(treat.start, -20, treat.end, 100, col = "grey85", border = NA)
+box()
+## Horizontal line at 0.
+abline(h = 0, lty = "dashed")
+## Plotting budgie data.
+lines(date, budgie)
+points(date, budgie, pch = 20)
+axis(1, at = pretty(date)[2:6], labels = c("Feb", "Mar", "Apr", "May", "Jun"))
+axis(2)
+## Adding x-axis label.
+mtext("Date", side = 1, line = 2.5)
+## Adding budgie label.
+text(par("usr")[1] + grconvertX(0.1, from = "inches", to = "user") - grconvertX(0, from = "inches", to = "user"),
+     par("usr")[4] - (grconvertY(0.1, from = "inches", to = "user") - grconvertY(0, from = "inches", to = "user")),
+     labels = "Budgerigar", adj = c(0, 1))
+## Adding y-axis label.
+par(las = 0)
+mtext("MO/HPF", side = 2, line = 2.5)
+
+```
+
 
 <!-- java script code for toggle button--> 
 <script>
