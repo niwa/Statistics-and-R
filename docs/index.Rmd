@@ -483,6 +483,8 @@ For [this quiz](https://b.socrative.com/login/student/) (Room Name **STATSANDR**
 
 ## Writing functions and coding your own hypothesis test (Fourth practical session)
 
+### Writing your own R function
+
 Typically a function in R takes in one or more **arguments**, carries out some **calculations**, and returns a **result**.
 
 Defining your own function is simple e.g.,
@@ -544,11 +546,11 @@ another_function_text(x = 3, y = 4, multiply = TRUE)
 [![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](http://swcarpentry.github.io/r-novice-inflammation/02-func-R/index.html)**For more on writing functions in R**
 
 
-## Lovebirds and Budgerigars
+### Lovebirds and Budgerigars
 
 The data we will be using can be downloaded from [here](https://raw.githubusercontent.com/b-steve/macrorhabdus/master/data/screening.csv) (once tab has opened right click and "Save As"). See [this section](#reading-in-data) to import this into your session.
 
-The analysis below is part of a larger piece of work completed by [Ben Stevenson](https://unidirectory.auckland.ac.nz/profile/ben-stevenson) (all code is publically available [here](https://github.com/b-steve/macrorhabdus)).
+The analysis below is part of a larger piece of work completed by [Ben Stevenson](https://unidirectory.auckland.ac.nz/profile/ben-stevenson) (all code is publicly available [here](https://github.com/b-steve/macrorhabdus)).
 
 ```{r read in data, echo = FALSE,message=FALSE}
 require(RCurl)
@@ -622,7 +624,7 @@ lovebird <- data$lovebird
 
 ```
 
-```{r permutation, eval = FALSE}
+```{r permutation, eval = TRUE}
 ## Permutation test
 
 ## Turning dates into day progression.
@@ -660,8 +662,9 @@ mean(means.l <= obs.l)
 sum(means.l.std <= obs.l.std)
 mean(means.l.std <= obs.l.std)
 ## plot
-hist(means.l.std)
+hist(means.l.std, main = "", xlab = "Standardised means")
 abline(v = obs.l.std,lwd = 2, lty = 2)
+legend("top", bty = "n", legend = "Observed standardised mean", lty = 2, lwd = 2, cex = 0.7)
 ```
 
 ### Week four "Homework"
@@ -670,7 +673,7 @@ abline(v = obs.l.std,lwd = 2, lty = 2)
      - a vector of dates, 
      - a corresponding vector of observations, and 
      - a date range specifying treatment limits as arguments (the treatment date range is from 2017-05-02 to 2017-06-02).
-- This function shoud output a vector of permuted means. 
+- This function should output a vector of permuted means. 
 - Include an option to either carry out the permutation test on 
      - the raw or 
      - standardised values. 
@@ -679,7 +682,8 @@ abline(v = obs.l.std,lwd = 2, lty = 2)
 
 
 <div class="toggle"><button>Solution</button>
-```{r w4 homework soln,eval = FALSE}
+```{r w4 homework soln,eval = TRUE}
+
 #### define function
 permutation_means <- function(dates, observations, date.range, raw = FALSE){
   # Turning dates into day progression.
@@ -711,6 +715,8 @@ permutation_means <- function(dates, observations, date.range, raw = FALSE){
   return(means.perm)
 }
 #########
+## The following assumes the screening data is a dataframe in your session named data
+## required library
 library(lubridate)
 ## Extracting variables.
 date <- dmy(data$date)
@@ -736,6 +742,19 @@ perm.means.raw <- permutation_means(day.b,budgie,date.range = date.range, raw = 
 ## rank and p-value
 sum(perm.means.raw <= obs.mean)
 mean(perm.means.raw <= obs.mean)
+### standardised
+## permuted means
+means.l.std <- permutation_means(date,data$lovebird,date.range = date.range, raw = FALSE)
+means.b.std <- permutation_means(date,data$budgie,date.range = date.range, raw = FALSE)
+## Outer product of possible sums across all 31-day periods.
+m <- outer(means.l.std, means.b.std, `+`)
+## observed standardised mean
+lovebird.std <- lovebird/sd(lovebird)
+obs.l.std.mean <- mean(lovebird.std[day.l >= date.range[1] & day.l <= date.range[2]],na.rm = TRUE)
+budgie.std <- budgie/sd(budgie)
+obs.b.std.mean <- mean(budgie.std[day.b >= date.range[1] & day.b <= date.range[2]],na.rm = TRUE)
+## Exact p-value.
+mean(m <= obs.l.std.mean + obs.b.std.mean)
 ```
 </div>
 <!-- java script code for toggle button--> 
