@@ -149,6 +149,9 @@ setwd("../data")
 ecoli <- read.csv("ecoli.csv") ## or the replace the .csv file name with the file name you've chosen
 ```
 
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](http://swcarpentry.github.io/r-novice-inflammation/11-supp-read-write-csv/index.html)**Reading and Writing .csv files with R**
+
 ### Inspecting and accessing data
 
 Let's look at the first few rows of the data.
@@ -480,7 +483,65 @@ For [this quiz](https://b.socrative.com/login/student/) (Room Name **STATSANDR**
 
 ## Writing functions and coding your own hypothesis test (Fourth practical session)
 
-[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](http://swcarpentry.github.io/r-novice-inflammation/02-func-R/index.html)**Writing functions in R**
+Typically a function in R takes in one or more **arguments**, carries out some **calculations**, and returns a **result**.
+
+Defining your own function is simple e.g.,
+
+```{r define}
+my_function <- function(x){
+  ## this function sums the argument x and divies by its length
+  ## to calculate the mean of x
+  result <- sum(x)/length(x)
+  return(result)
+}
+## Let's test this
+## first of all create a vector of numbers
+x <- c(1,2,9,3,4,5,6,7,5,4)
+## test my_function above
+my_function(x = x)
+## compare to the inbuilt mean() function
+mean(x = x)
+```
+```{r more com function}
+## Now let's try a function with multiple arguments
+another_function <- function(x,y, multiply = FALSE){
+  if(multiply){ 
+    ## if multiply = TRUE the the product of the arguments will be calculated
+    result <- x*y
+  }else{
+    ## otherwie it'll be the sum
+      result <- x + y
+  }
+  return(result)
+}
+## calculate the product
+another_function(x = 3, y = 4, multiply = FALSE)
+## calculate the sum
+another_function(x = 3, y = 4, multiply = TRUE)
+```
+
+```{r more com function with text}
+## Now let's try a function with multiple arguments
+another_function_text <- function(x,y, multiply = FALSE){
+  if(multiply){ 
+    ## if multiply = TRUE the the product of the arguments will be calculated
+    text <- "The product of x and y is"
+    result <- x*y
+  }else{
+    ## otherwie it'll be the sum
+    text <- "The sum of x and y is"
+    result <- x + y
+  }
+  cat(text,result, "\n") 
+  ## the cat() function prints out the objects to your console. "\n" makes the promp skip back to the next line
+}
+## calculate the product
+another_function_text(x = 3, y = 4, multiply = FALSE)
+## calculate the sum
+another_function_text(x = 3, y = 4, multiply = TRUE)
+```
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](http://swcarpentry.github.io/r-novice-inflammation/02-func-R/index.html)**For more on writing functions in R**
 
 
 ## Lovebirds and Budgerigars
@@ -572,6 +633,7 @@ lovebird <- lovebird[!is.na(lovebird)]
 lovebird.std <- lovebird/sd(lovebird)
 
 ## Treatment day limits.
+## treatment date range from 2017-05-02 to 2017-06-02
 treat.lims <- day[c(18, 27)]
 ## All possible start- and end-date pairings.
 start.perm <- 1:(max(day.l) - 31)
@@ -607,18 +669,73 @@ abline(v = obs.l.std,lwd = 2, lty = 2)
 - Write an R function that carries out a permutation test as above taking 
      - a vector of dates, 
      - a corresponding vector of observations, and 
-     - a date range specifying treatment limits as arguments.
+     - a date range specifying treatment limits as arguments (the treatment date range is from 2017-05-02 to 2017-06-02).
 - This function shoud output a vector of permuted means. 
 - Include an option to either carry out the permutation test on 
      - the raw or 
      - standardised values. 
-- Use the function on the lovebird and budgie data to carry out two hypothesis tests that the observed raw means are equal to any other permuted mean.  
-- Use this function to test the hypothesis that the observed sum of the budgie and lovebird standardised means during treatment is equal to any other possible permuted combinations.
+- Use the function on the lovebird and budgie data to carry out two hypothesis tests that the observed standardised means are equal to any other permuted mean.  
+- Extra: use this function to test the hypothesis that the observed sum of the budgie and lovebird standardised means during treatment is equal to any other possible permuted combinations. [HINT: look into the `outer()` function to compute all possible summations of the lovebird and budgie permuted means.]
 
 
 <div class="toggle"><button>Solution</button>
 ```{r w4 homework soln,eval = FALSE}
-## write solution here
+#### define function
+permutation_means <- function(dates, observations, date.range, raw = FALSE){
+  # Turning dates into day progression.
+  day <- as.vector(dates - dates[1]) + 1
+  start.treat <- which(dates == min(date.range))
+  end.treat <- which(dates == max(date.range))
+  ##  variables.
+  day <- day[!is.na(observations)]
+  observations <- observations[!is.na(observations)]
+  if(raw){
+    observations <- observations
+  }else{
+    observations <- observations/sd(observations)
+  }
+  # Treatment day limits.
+  treat.lims <- day[c(start.treat, end.treat)]
+  ## All possible start- and end-date pairings.
+  start.perm <- 1:(max(day) - 31)
+  end.perm <- start.perm + 31
+  ## Doing permutations for observations.
+  n <- length(start.perm)
+  means.perm <- numeric(n)
+  for (i in 1:n){
+     means.perm[i] <- mean(observations[day >= start.perm[i] & day <= end.perm[i]])
+    
+  }
+  ## Getting rid of periods with no observations.
+  means.perm <- means.perm[is.finite(means.perm)]
+  return(means.perm)
+}
+#########
+library(lubridate)
+## Extracting variables.
+date <- dmy(data$date)
+lovebird <- data$lovebird
+date.range <- c(date[18],date[27])
+## calculate observed mean during treatment period for lovebirds
+day.l <- date[!is.na(lovebird)]
+lovebird <- lovebird[!is.na(lovebird)]
+obs.mean <- mean(lovebird[day.l >= date.range[1] & day.l <= date.range[2]],na.rm = TRUE)
+## carry out permutation
+perm.means.raw <- permutation_means(date,data$lovebird,date.range = date.range, raw = TRUE)
+## rank and p-value
+sum(perm.means.raw <= obs.mean)
+mean(perm.means.raw <= obs.mean)
+## now for budgies
+budgie <- data$budgie
+## calculate observed mean during treatment period for budgies
+day.b <- date[!is.na(budgie)]
+budgie <- budgie[!is.na(budgie)]
+obs.mean <- mean(budgie[day.b >= date.range[1] & day.b <= date.range[2]],na.rm = FALSE)
+## carry out permutation
+perm.means.raw <- permutation_means(day.b,budgie,date.range = date.range, raw = TRUE)
+## rank and p-value
+sum(perm.means.raw <= obs.mean)
+mean(perm.means.raw <= obs.mean)
 ```
 </div>
 <!-- java script code for toggle button--> 
