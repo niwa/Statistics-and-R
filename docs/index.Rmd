@@ -757,6 +757,106 @@ obs.b.std.mean <- mean(budgie.std[day.b >= date.range[1] & day.b <= date.range[2
 mean(m <= obs.l.std.mean + obs.b.std.mean)
 ```
 </div>
+
+## The simple linear model (Fifth practical session)
+
+
+For this section we will be using some data supplied along with base R. These data give the speed of cars and the distances taken to stop (data were recorded in the 1920s). To access this data use `data(cars)` and to read more about the data use `?cars`. Try using some of the utility functions from above to inspect the data (e.g., ` head(cars)`, `str(cars)`, `plot(cars)`).
+
+One question we might want to ask is: **Does the stopping distancs(ft) or cars relate to their speed(mph)?** (in the 1920s...)
+
+Note this question relates to the average relationship between a car's stopping distance(ft) and its speed(mph). From a simple scatter plot it seems very likely the two are related, however there is quite a bit of variability in stopping distance for cars going the same speed (especially for faster cars).
+
+```{r cars plot}
+plot(cars, xlab  = "speed (mph)", ylab = "stopping distace (ft)", pch = 20)
+```
+
+Let's fit a linear model using the `lm()` function used above in [this section](#one-sample-t-test-and-a-null-linear-model).
+
+````{r cars lm}
+fit <- lm(dist ~ speed, data = cars)
+summary(fit)
+```
+
+Recall the equation of a straight line is $$y = mx + c$$ where 
+
+ - c is described as the intercept (the value of $y$ when $x = 0$), and 
+ - m is described as the slope (in our case this is the rate of increase or decrease in stopping distance, on average, for every additional 1mph in speed). 
+ 
+ In the case of a linear model it's the expected value of the variable , $y$, $E[y]$ that is assumed to follow a linear relationship with $x$. Statisticians love Greek letters so this is typically written as $$E[y] = \beta_0 + \beta_1x.$$
+ 
+ The **Estimate** column gives us the coefficients $\beta_0$ and $\beta_1$, so from the output above is looks like the 'best' fit tells us that the predicted stopping distance (ft) of a car given a speed(mph) of **speed** is given by the following equation $$\widehat{\text{stopping distance}} = -17.58 + 3.93\times\text{speed}.$$ Here $\widehat{\text{stopping distance}}$ denotes the estimated stopping distance(ft) value.
+
+Is there something we might want to be mindful of?
+
+Let's make some predictions for cars with speeds of 15 and 20 mph.
+
+```{r pred}
+pred.speeds <- c(15,20)
+## could do this mannually using estimates to 2dp
+pred <- function(pred.speed){
+  -17.58 + 3.93*pred.speed
+}
+pred(pred.speeds)
+## or using an inbuilt function
+predict(fit, newdata = data.frame(speed = pred.speeds), type = "response")
+## could also get prediction intervals
+predict(fit, newdata = data.frame(speed = pred.speeds), type = "response", interval = "prediction",level = 0.95)
+```
+
+Let's look at how the model does overall.
+
+
+```{r mod plot}
+## plot raw data
+plot(cars, xlab  = "speed (mph)", ylab = "stopping distace (ft)", pch = 20)
+## get predictions and 95% confidence intervals for the data points
+preds <- predict(fit, type = "response", interval = "confidence", level = 0.95)
+## plot "line of best fit"
+lines(cars$speed,preds[,1], lwd = 3)
+## plot lower 95% CI bound
+lines(cars$speed,preds[,2], lwd = 3, lty = 2)
+## plot upper 95% CI bound
+lines(cars$speed,preds[,3], lwd = 3,lty = 2)
+## put legend
+legend("topleft",bty = "n", lty = c(1,2), lwd = 3, legend = c("Model fit","95% confidence bounds"))
+
+```
+
+How well does the model account for the variation in the data. The $R^2$ statistic gives us the proportion of variance explained. We can access this value using
+
+```{r r2}
+summary(fit)$r.squared
+## which gives the proportion of variance explained or altervativaly
+100*summary(fit)$r.squared
+## is the % of total variation in stoppting distance explained by using a straight line relationship.
+```
+### Model checking
+
+Out proposed model above can be written as $$y_i = \beta_0 + \beta_1x_i + \epsilon_i$$ where $$\epsilon_i \overset{iid}{\sim} N(0,\sigma^2)$$ for each car $i = 1, ..., 50$. Here y denotes the stopping distance(ft) and x denotes the speed(mph). Here $\epsilon_i$ is the random component that essentially "mops" up what's left over from $\beta_0 + \beta_1x_i$. We make some assumptions about $\epsilon_i$ and these, in decreasing order of importance, are:
+
+ - **i**id, independence
+ - i**i**d, identically distributed with mean 0 and a constant variance $\sigma^2$ (called equality of variance) 
+ - ii**d** Normality
+ 
+Can we conclude that independence is reasonable (i.e., are cars behaving independently of one another?) I'd hope so! we can move onto the other two assumptions. Run `plot(fit)`. The first plot shows the residuals verses the fitted values. Does the scatter look constant to you? The second plot is a Normal quantile-quantile plot. Recall we are assuming our residuals are Normally distributed so there should be a 1-1 relationship between the standardised residuals and quantiles from a Normal distribution. Is this the case?
+
+What about *Influence*, are any observations "unduly" influencing the model estimates? We could use Cook's distance to investigate this (see fourth plot) or run
+
+```{r cooks}
+ barplot(cooks.distance(fit))
+```
+
+Observation 49 clearly dominates this plot. However as a "rule of thumb" an observation is "influential" if Cook's distance is greater than 0.4 or if we remove the observation any parameter estimates change by more than one standard error. The first is not the case here, but just to investigate this further re-run the model without observation 49 and see if the parameter estimates do change by more than one standard error. [HINT: use `cars.new <- cars[-49,]` to create a new data frame without the 49th `cars` observation]
+
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://www.datacamp.com/community/tutorials/linear-regression-R)**Try a linear regression in R tutorial**
+
+
+### Week five "Homework"
+
+Using data of your own, where a linear relationship is likely, fit a linear model and go through the model checking process. Asses whether the model is appropriate. If you have any questions or get stuck please feel free to come and see me.
+
 <!-- java script code for toggle button--> 
 <script>
   $(".toggle").click(function() {
