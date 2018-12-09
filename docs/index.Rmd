@@ -226,7 +226,7 @@ It is worth noting that:
 - R functions arguments can be matched positionally or by name. Therefore the following calls to **mean** are equivalent `mean(ecoli$value)`
 `mean(x = ecoli$value)`, `mean(x = ecoli$value, na.rm = FALSE)`,  and `mean(na.rm = FALSE, x = ecoli$value)`. Try it for yourself.
 
-- You can mix positional matching with matching by name. When an argument is matched by name, it is “taken out” of the argument list and the remaining unnamed arguments are matched in the order that they are listed in the function definition. For example, try`mean(na.rm = FALSE, ecoli$value)`. 
+- You can mix positional matching with matching by name. When an argument is matched by name, it is taken out of the argument list and the remaining unnamed arguments are matched in the order that they are listed in the function definition. For example, try`mean(na.rm = FALSE, ecoli$value)`. 
 
 
 ### Basic descriptive (summary) statistics
@@ -856,6 +856,65 @@ Observation 49 clearly dominates this plot. However as a "rule of thumb" an obse
 ### Week five "Homework"
 
 Using data of your own, where a linear relationship is likely, fit a linear model and go through the model checking process. Asses whether the model is appropriate. If you have any questions or get stuck please feel free to come and see me.
+
+## Modelling count data: introducing the generalised linear model (Sixth practical session)
+
+Let's consider the following data. **Number** relates to the numbers of some event recorded in each year.
+
+```{r make data}
+count <- data.frame(Year = 2009:2018, Number = c(1,5,3,15,35,62,134,798,1500,3591)) ## make our own example data
+count
+par(c(1,2)) ## allows us to look at plots side by side
+plot(count$Year,count$Number,pch = 20) ## raw data
+plot(count$Year,log(count$Number),pch = 20)
+```
+
+Using a log transformation fit a linear model the the data where  $$E[\text{log}(Number)] = \beta_0 + \beta_1\,\text{Year}$$ (HINT: remember to log transform the response). Have a look at the [previous section](#the-simple-linear-model-(fifth-practical-session)) for details on how to do this. Check your assumptions. What do you find? Are all the assumptions met? HINT: look at a plot of Cook's distances.
+
+
+Rather than transforming the data (e.g., through using a log transformation) we could assume that the Number of events each year, **Y**, are a Poisson distributed count variable. In this case instead of our model being $$E[y] = \text{linear model}.$$ we could have  $$E[y] = \text{exp(linear model)}$$ which is the same as  $$\text{log}(E[y]) = \text{linear model}.$$ In this case we are not transforming **Y** but assuming the expected value is of a multiplicative form.
+
+So let's redo the model you fitted above using a generalised linear model (GLM). This model will be $$E[Number] = \text{exp}(\beta_0 + \beta_1\,\text{Year}).$$
+
+
+```{r glm}
+glm.fit <- glm(Number ~ Year, family = poisson, data = count)
+summary(glm.fit)
+## let's have a look at the residuals
+plot(glm.fit, which = 1)
+```
+
+Assumptions of a Poisson model include that the variances, $Var(Y)$, of the counts are the same as their means, $E[Y]$. This means that the residual deviance$\sim \chi_1^p$ where $p$ is the degrees of freedom. The p-value associated with this in our case is
+
+```{r assumptions}
+dev.resid <- summary(glm.fit)$deviance ## extract deviance
+df <- summary(glm.fit)$df.residual ## residual degrees of freedom
+1 - pchisq(dev.resid,df) ## calculate p-value
+```
+
+Hmmm, we can reject the hypothesis that residual deviance$\sim \chi_1^8$. This indicates that our model is not appropriate. Is this a surprise? Look again at the raw data plot. Does it seem likely that $Var(Y) = E[Y]$?
+
+Can we fix this? What about if our equal mean-variance assumption was modified to $Var(Y) = k\,E[Y]$ where $k > 1$. This can be done simply by assuming a "quasi"-Poisson  distribution. To do do run
+
+```{r quasi}
+quasi.fit <- glm(Number ~ Year, family = quasipoisson, data = count)
+## let's have a look at the summary
+summary(quasi.fit)
+## and calculate come confidence intervals for the parameters
+exp(confint.default(quasi.fit,print.out = FALSE)) ## back transform manually
+```
+
+
+So this suggests that the annual number of events increases by between 2.26 and 2.76 times each year. Compare these estimates to those from the linear (on the transformed counts) and the Poisson model above.
+
+
+
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://www.datacamp.com/community/tutorials/logistic-regression-R)**Try a logistic regression in R tutorial**
+
+### Week six "Homework"
+
+Using data of your own, where the appropriate conditions are met, fit either a logistic or a Poisson model going through the model checking process. Asses whether the model is appropriate. If you have any questions or get stuck please feel free to come and see me.
 
 <!-- java script code for toggle button--> 
 <script>
