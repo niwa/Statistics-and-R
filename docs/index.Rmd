@@ -864,7 +864,6 @@ Let's consider the following data. **Number** relates to the numbers of some eve
 ```{r make data}
 count <- data.frame(Year = 2009:2018, Number = c(1,5,3,15,35,62,134,798,1500,3591)) ## make our own example data
 count
-par(c(1,2)) ## allows us to look at plots side by side
 plot(count$Year,count$Number,pch = 20) ## raw data
 plot(count$Year,log(count$Number),pch = 20)
 ```
