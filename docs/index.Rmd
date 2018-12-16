@@ -915,6 +915,225 @@ So this suggests that the annual number of events increases by between 2.26 and 
 
 Using data of your own, where the appropriate conditions are met, fit either a logistic or a Poisson model going through the model checking process. Asses whether the model is appropriate. If you have any questions or get stuck please feel free to come and see me.
 
+
+## Spatial models in INLA (Seventh practical session)
+
+To read more about the INLA project, see [here](http://www.r-inla.org/home).
+
+First of all you'll need to download the R-INLA package. To do so run `install.packages("INLA", repos=c(getOption("repos"), INLA="https://inla.r-inla-download.org/R/stable"), dep=TRUE)` (this might take a while). 
+
+```{r library, message = FALSE}
+library(INLA)
+```
+
+### Data collected by regions
+
+
+This section illustrates the fitting of disease mapping with count data (Scotland, UK). We use a Besag-York-Mollier model (BYM) for the spatial structure (latent effect). For more details see [this tutorial](http://discovery.ucl.ac.uk/1415919/1/Baio_BlaCamBaiRue.pdf).
+
+```{r scotland}
+data(Scotland)
+head(Scotland)
+source(system.file("demodata/Bym-map.R", package="INLA")) ## load function to plot map
+Bym.map(Scotland$Counts)
+```
+
+To vizualise the graph you may need to run the following code to install the `Rgraphviz` package.
+
+```{r aside for Rgraphviz, eval = FALSE}
+source("http://bioconductor.org/biocLite.R")
+biocLite("Rgraphviz")
+```
+
+```{r bym model, message = FALSE}
+library(Rgraphviz) ## needed to plot the graph
+g = system.file("demodata/scotland.graph", package="INLA") ## get graph
+graph <- inla.read.graph(g)
+plot(graph)
+## set up formula
+formula = Counts ~ f(Region, model="bym", graph = g,
+                          param=c(0.5,0.0005)) + I(X/10)
+## fit model
+mod.scotland = inla(formula,family="poisson",E = E,data = Scotland)
+summary(mod.scotland)
+Bym.map(mod.scotland$summary.random$Region$mean)
+```
+
+
+### Data collected at point locations
+
+This section is based on [this tutorial](https://haakonbakka.bitbucket.io/btopic108.html) where we assume a latent Gaussian Markov Field for the spatial auto-correlation. See [this material](http://inla.r-inla-download.org/r-inla.org/tutorials/spde/html/) for further details.
+
+First of all load some more required libraries. You may need to install them first by running `install.packages("...")`.
+
+```{r, message = FALSE}
+library(sp)
+library(fields)
+library(geoR) ## for the ca20 data
+```
+
+We will be using data already in R
+
+```{r call data}
+data('ca20')
+```
+
+Use the utility functions you've learnt to explore the data. Use `?ca20` to learn about the data. You'll notice this dataset is stored as a list with named elements. The first element sre the coordinates, the second the response vaiable. We can still use the `$` sign to access the elements.
+
+For ease and other reasons we are going to scale the data. Notice we are using a linear transformation which does not change the structre of the data.
+
+```{r rescale}
+df <- data.frame(y = ca20$data, locx = ca20[[1]][ , 1], locy = ca20[[1]][ , 2], ca20[[3]])
+spatial.scaling <- 100
+df$locx <- (df$locx - min(df$locx))/spatial.scaling
+df$locy <- (df$locy - min(df$locy))/spatial.scaling
+df$altitude <- df$altitude - mean(df$altitude)
+df$y <- df$y - 50
+```
+
+
+Let's make a quilt plot to look at the data
+
+```{r quilt}
+quilt.plot(x = df$locx,y = df$locy,z = df$y,nx = 40,ny = 40, col = terrain.colors(101),
+           main = "Data")
+```
+
+
+#### Modelling
+
+To inform the mdel as to the spatial structure of the observations a mesh is constructed. This is the discretization of the study area (essentially
+the area is divided up into small triangles, similar to creating a raster or a grid over space).
+
+```{r mesh}
+max.edge <- 0.5
+mesh <- inla.mesh.2d(
+  loc=df[ , c('locx', 'locy')],
+  offset = c(0.5, 1.5),
+  max.edge=c(max.edge, max.edge*3),
+  # discretization accuracy
+  cutoff=max.edge/5)
+
+## let's have a look at the mesh
+plot(mesh, asp=1)
+points(df[ , c('locx', 'locy')], col='red', pch = 20) ## add the observation locations
+axis(1)
+axis(2) ## add axis ticks
+
+```
+
+We now need to connect the measurement locations to the mesh representation, we need the so-called A-matrix.
+
+```{r A matrix}
+A = inla.spde.make.A(mesh=mesh, loc=data.matrix(df[ , c('locx', 'locy')]))
+```
+
+Create the covariate data frame. Note the `intercept = 1` will automatically expand so that it is the same length as the altitude covariate.
+
+```{r covs}
+covariates <- cbind(intercept = 1, altitude = df$altitude)
+```
+
+Create the data 'stack'
+
+```{r stack}
+stack <- inla.stack(tag='est',
+                    # - Name (nametag) of the stack
+                    # - Here: est for estimating
+                    data=list(y = df$y),
+                    effects=list(
+                      # - The Model Components
+                      s=1:mesh$n,
+                      # - The "s" is means "spatial"
+                     covariates = covariates),
+                      # - The second is all fixed effects
+                    A = list(A, 1)
+                    # - First projector matrix is for 's'
+                    # - second is for 'fixed effects'
+                    )
+```
+
+```{r priors}
+prior.median.sd = 1; prior.median.range = 7
+
+spde = inla.spde2.pcmatern(mesh, prior.range = c(prior.median.range, .5), prior.sigma = c(prior.median.sd, .5), constr = T)
+
+formula = y ~ -1 + covariates + f(s, model=spde)
+
+prior.median.gaus.sd = 5.5
+
+family = 'gaussian'
+control.family = list(hyper = list(prec = list(
+  prior = "pc.prec", fixed = FALSE, param = c(prior.median.gaus.sd,0.5))))
+
+```
+
+```{r result}
+res <- inla(formula, data=inla.stack.data(stack),
+            control.predictor=list(A = inla.stack.A(stack), compute=T),
+            # compute=T to get posterior for fitted values
+            family = family,
+            control.family = control.family,
+            #control.compute = list(config=T, dic=T, cpo=T, waic=T), 
+            # - Model comparisons
+            control.inla = list(int.strategy='eb'),
+            # - faster computation
+            #control.inla = list(int.strategy='grid'),
+            # - More accurate integration over hyper-parameters
+            verbose=F) ## will take a few seconds
+summary(res)
+```
+
+Create a function to plot spatial effects
+
+```{r spatial plots}
+local.plot.field = function(field, mesh, xlim=c(0,11), ylim=c(0,9), ...){
+  stopifnot(length(field) == mesh$n)
+  # - error when using the wrong mesh
+  proj = inla.mesh.projector(mesh, xlim = xlim, 
+                             ylim = ylim, dims=c(300, 300))
+  # - Can project from the mesh onto a 300x300 plotting grid 
+  field.proj = inla.mesh.project(proj, field)
+  # - Do the projection
+  image.plot(list(x = proj$x, y=proj$y, z = field.proj), 
+             xlim = xlim, ylim = ylim, col = terrain.colors(100), ...)  
+}
+
+```
+
+Plot the posterior mean of the spatial effect
+
+```{r plotting posterior mean}
+local.plot.field(res$summary.random[['s']][['mean']], mesh)
+axis(1)
+axis(2)
+```
+
+Plot uncertainty
+
+```{r plotting sd}
+local.plot.field(res$summary.random$s$sd, mesh)
+axis(1)
+axis(2)
+```
+
+Plot fitted values
+
+```{r plotting fitted}
+quilt.plot(x = df$locx,y = df$locy,z = res$summary.fitted.values$mean[1:nrow(df)],nx = 40,ny = 40, col = terrain.colors(100), main="Fitted values", 
+           zlim = range(df$y))
+```
+
+Compare this to the quilt plot of the observed data above.
+
+[![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Men_at_work_sign_%28green%29.svg/996px-Men_at_work_sign_%28green%29.svg.png){width=10%}](https://haakonbakka.bitbucket.io/organisedtopics.html)**Going further with INLA**
+
+
+### Week seven "Homework"
+
+Using appropriate spatial data of your own use INLA to fit either of the models above. If you have any questions or get stuck please feel free to come and see me.
+
+
 <!-- java script code for toggle button--> 
 <script>
   $(".toggle").click(function() {
