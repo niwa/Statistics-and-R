@@ -978,9 +978,9 @@ We will be using data already in R
 data('ca20')
 ```
 
-Use the utility functions you've learnt to explore the data. Use `?ca20` to learn about the data. You'll notice this dataset is stored as a list with named elements. The first element sre the coordinates, the second the response vaiable. We can still use the `$` sign to access the elements.
+Use the utility functions you've learnt to explore the data. Use `?ca20` to learn about the data. You'll notice this dataset is stored as a list with named elements. The first element are the coordinates, the second the response variable. We can still use the `$` sign to access the elements.
 
-For ease and other reasons we are going to scale the data. Notice we are using a linear transformation which does not change the structre of the data.
+For ease and other reasons we are going to scale the data. Notice we are using a linear transformation which does not change the structure of the data.
 
 ```{r rescale}
 df <- data.frame(y = ca20$data, locx = ca20[[1]][ , 1], locy = ca20[[1]][ , 2], ca20[[3]])
@@ -1002,7 +1002,7 @@ quilt.plot(x = df$locx,y = df$locy,z = df$y,nx = 40,ny = 40, col = terrain.color
 
 #### Modelling
 
-To inform the mdel as to the spatial structure of the observations a mesh is constructed. This is the discretization of the study area (essentially
+To inform the model as to the spatial structure of the observations a mesh is constructed. This is the discretization of the study area (essentially
 the area is divided up into small triangles, similar to creating a raster or a grid over space).
 
 ```{r mesh}
